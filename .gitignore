@@ -1,0 +1,26 @@
+# Maven / Java
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Variables locales / secretos
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+secrets/

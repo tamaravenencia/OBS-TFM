@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-policy-service
+  namespace: tfm-dev
+  labels:
+    app: demo-policy-service
+    environment: dev
+    project: tfm
+spec:
+  type: ClusterIP
+  selector:
+    app: demo-policy-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http

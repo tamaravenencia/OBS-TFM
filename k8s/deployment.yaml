@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-policy-service
+  namespace: tfm-dev
+  labels:
+    app: demo-policy-service
+    environment: dev
+    project: tfm
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: demo-policy-service
+
+  template:
+    metadata:
+      labels:
+        app: demo-policy-service
+        environment: dev
+        project: tfm
+
+    spec:
+      containers:
+        - name: demo-policy-service
+          image: demo-policy-service:1.0.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+
+          envFrom:
+            - configMapRef:
+                name: demo-policy-config
+            - secretRef:
+                name: demo-policy-secret
+
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 2
+            failureThreshold: 30
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+      terminationGracePeriodSeconds: 30

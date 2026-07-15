@@ -1,0 +1,1 @@
+Validación del pipeline parametrizado de Jenkins.

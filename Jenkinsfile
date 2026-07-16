@@ -23,9 +23,9 @@ pipeline {
             }
         }
 
-        stage('Pruebas automatizadas') {
+        stage('Pruebas y Quality Gate') {
             steps {
-                sh 'mvn -B test'
+                sh 'mvn -B verify'
             }
         }
 

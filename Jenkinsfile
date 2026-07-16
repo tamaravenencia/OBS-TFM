@@ -23,6 +23,12 @@ pipeline {
             }
         }
 
+        stage('Pruebas automatizadas') {
+            steps {
+                sh 'mvn -B test'
+            }
+        }
+
         stage('Versionado') {
             steps {
                 script {

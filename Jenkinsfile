@@ -72,6 +72,20 @@ pipeline {
                 '''
             }
         }
+
+        stage('Desplegar en Kubernetes') {
+            steps {
+                sh '''
+                    kubectl -n tfm-dev set image \
+                    deployment/demo-policy-service \
+                    demo-policy-service=${IMAGE_NAME}:${IMAGE_TAG}
+
+                    kubectl -n tfm-dev rollout status \
+                    deployment/demo-policy-service \
+                    --timeout=120s
+                '''
+            }
+        }
     }
 
     post {

@@ -13,7 +13,7 @@ class PolicyServiceTest {
     void shouldReturnAllPolicies() {
         var policies = policyService.findAll();
 
-        assertEquals(3, policies.size());
+        assertEquals(4, policies.size());
     }
 
     @Test

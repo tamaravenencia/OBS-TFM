@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo-policy-service
+  namespace: tfm-dev
+  labels:
+    release: monitoring
+    app: demo-policy-service
+    project: tfm
+spec:
+  selector:
+    matchLabels:
+      app: demo-policy-service
+
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      scrapeTimeout: 10s

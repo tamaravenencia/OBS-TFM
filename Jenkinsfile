@@ -86,6 +86,40 @@ pipeline {
                 '''
             }
         }
+
+        stage('Validación post-deploy') {
+            steps {
+                sh '''
+                    set -eu
+
+                    echo "Imagen desplegada:"
+                    kubectl -n tfm-dev get deployment demo-policy-service \
+                    -o jsonpath='{.spec.template.spec.containers[0].image}{"\\n"}'
+
+                    echo "Estado de los pods:"
+                    kubectl -n tfm-dev get pods \
+                    -l app=demo-policy-service
+
+                    echo "Validación del endpoint de salud:"
+
+                    SMOKE_POD="smoke-test-${BUILD_NUMBER}"
+
+                    kubectl -n tfm-dev delete pod "${SMOKE_POD}" \
+                    --ignore-not-found=true
+
+                    kubectl -n tfm-dev run "${SMOKE_POD}" \
+                    --image=curlimages/curl:8.10.1 \
+                    --restart=Never \
+                    --attach \
+                    --rm \
+                    --command -- \
+                    curl -fsS \
+                        --retry 10 \
+                        --retry-delay 3 \
+                        http://demo-policy-service:8080/actuator/health
+                '''
+            }
+        }
     }
 
     post {

@@ -86,6 +86,35 @@ pipeline {
             }
         }
 
+        stage('Escaneo de imagen con Trivy') {
+            steps {
+                sh '''
+                    mkdir -p target
+
+                    docker run --rm \
+                    -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v trivy-cache:/root/.cache/trivy \
+                    aquasec/trivy:latest image \
+                    --scanners vuln \
+                    --severity CRITICAL \
+                    --exit-code 0 \
+                    --format json \
+                    ${IMAGE_NAME}:${IMAGE_TAG} \
+                    > target/trivy-report.json
+
+                    docker run --rm \
+                    -v /var/run/docker.sock:/var/run/docker.sock \
+                    -v trivy-cache:/root/.cache/trivy \
+                    aquasec/trivy:latest image \
+                    --scanners vuln \
+                    --severity CRITICAL \
+                    --exit-code 1 \
+                    --no-progress \
+                    ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
+            }
+        }
+
         stage('Docker Tag Latest') {
             steps {
                 sh '''
@@ -166,7 +195,7 @@ pipeline {
 
         always {
             archiveArtifacts(
-                artifacts: 'target/*.jar,target/dependency-check-report.html',
+                artifacts: 'target/*.jar,target/dependency-check-report.html,target/trivy-report.json',
                 allowEmptyArchive: true
             )
         }

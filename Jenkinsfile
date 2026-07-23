@@ -137,7 +137,7 @@ pipeline {
         stage('Desplegar en Kubernetes') {
             steps {
                 sh '''
-                    kubectl apply -f deployment.yaml
+                    kubectl apply -f k8s/deployment.yaml
                     kubectl -n tfm-dev set image \
                     deployment/demo-policy-service \
                     demo-policy-service=${IMAGE_NAME}:${IMAGE_TAG}

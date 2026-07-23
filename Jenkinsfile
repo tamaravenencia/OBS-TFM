@@ -29,6 +29,16 @@ pipeline {
             }
         }
 
+        stage('Análisis de dependencias OWASP') {
+            steps {
+                sh '''
+                    mvn -B \
+                    org.owasp:dependency-check-maven:12.2.2:check \
+                    -Dformat=HTML
+                '''
+            }
+        }
+
         stage('Análisis estático SonarQube') {
             steps {
                 withSonarQubeEnv('SonarQube-TFM') {
@@ -155,7 +165,7 @@ pipeline {
 
         always {
             archiveArtifacts(
-                artifacts: 'target/*.jar',
+                artifacts: 'target/*.jar,target/dependency-check-report.html',
                 allowEmptyArchive: true
             )
         }

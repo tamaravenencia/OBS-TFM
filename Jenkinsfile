@@ -23,9 +23,30 @@ pipeline {
             }
         }
 
-        stage('Pruebas y Quality Gate') {
+        stage('Pruebas y Quality Gate de cobertura') {
             steps {
                 sh 'mvn -B verify'
+            }
+        }
+
+        stage('Análisis estático SonarQube') {
+            steps {
+                withSonarQubeEnv('SonarQube-TFM') {
+                    sh '''
+                        mvn -B \
+                        org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                        -Dsonar.projectKey=demo-policy-service \
+                        -Dsonar.projectName=demo-policy-service
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate SonarQube') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 

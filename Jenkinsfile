@@ -34,7 +34,8 @@ pipeline {
                 sh '''
                     mvn -B \
                     org.owasp:dependency-check-maven:12.2.2:check \
-                    -Dformat=HTML
+                    -Dformat=HTML \
+                    -DfailBuildOnCVSS=9
                 '''
             }
         }

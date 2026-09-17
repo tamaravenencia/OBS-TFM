@@ -31,12 +31,21 @@ pipeline {
 
         stage('Análisis de dependencias OWASP') {
             steps {
-                sh '''
-                    mvn -B \
-                    org.owasp:dependency-check-maven:12.2.2:check \
-                    -Dformat=HTML \
-                    -DfailBuildOnCVSS=9
-                '''
+                withCredentials([
+                    string(
+                        credentialsId: 'nvd-api-key',
+                        variable: 'NVD_API_KEY'
+                    )
+                ]) {
+                    sh '''
+                        mvn -B \
+                          org.owasp:dependency-check-maven:12.2.2:check \
+                          -DnvdApiKeyEnvironmentVariable=NVD_API_KEY \
+                          -DnvdValidForHours=24 \
+                          -Dformat=HTML \
+                          -DfailBuildOnCVSS=9
+                    '''
+                }
             }
         }
 
